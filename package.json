@@ -1,0 +1,47 @@
+{
+  "name": "youtube-transcript-api",
+  "version": "1.0.0",
+  "description": "A REST API for fetching YouTube video transcripts",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --env-file=.env server.js",
+    "dev": "node --env-file=.env --watch server.js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:format": "npm run lint:fix && npm run format",
+    "prepare": "husky",
+    "commit": "commit",
+    "install-browsers": "npx playwright install chromium"
+  },
+  "keywords": [
+    "youtube",
+    "transcript",
+    "api",
+    "express",
+    "nodejs"
+  ],
+  "author": "raulnq",
+  "license": "ISC",
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/prompt-cli": "^19.8.1",
+    "@eslint/js": "^9.36.0",
+    "cross-env": "^10.0.0",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.4.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "http-problem-details": "^0.1.7",
+    "morgan": "^1.10.1",
+    "playwright": "^1.55.0"
+  }
+}
