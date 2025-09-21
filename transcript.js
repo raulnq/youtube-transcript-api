@@ -40,7 +40,14 @@ export default async function getTranscript(videoId) {
 
     const errorElement = await page.$(selectors.notFound);
     if (errorElement) {
-      throw new AppError('Video not found or unavailable', 'not_found', 404);
+      const screenshot = await page.screenshot({
+        fullPage: true,
+        type: 'png',
+      });
+      const base64Screenshot = screenshot.toString('base64');
+      throw new AppError('Video not found or unavailable', 'not_found', 404, {
+        screenshot: base64Screenshot,
+      });
     }
 
     const expandButton = await page.$(selectors.expand);

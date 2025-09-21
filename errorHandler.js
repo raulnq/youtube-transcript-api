@@ -1,11 +1,12 @@
 import { ProblemDocument } from 'http-problem-details';
 
 export class AppError extends Error {
-  constructor(error, type, status) {
+  constructor(error, type, status, data = null) {
     super(error);
     this.type = type;
     this.status = status;
     this.detail = error;
+    this.data = data;
   }
 }
 
@@ -25,6 +26,11 @@ export const errorHandler = (err, req, res, next) => {
       detail: err.detail,
       instance: req.originalUrl,
     });
+
+    if (err.data) {
+      Object.assign(problem, err.data);
+    }
+
     res.status(err.status).json(problem);
   } else {
     res.status(500).json(
