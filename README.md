@@ -223,18 +223,18 @@ print(transcript_data)
 
 You can customize the behavior using environment variables:
 
-| Variable                      | Description                                    | Default                                |
-| ----------------------------- | ---------------------------------------------- | -------------------------------------- |
-| `PORT`                        | Server port                                    | `5000`                                 |
-| `API_KEY`                     | Required API key for authentication (optional) | Not set (authentication disabled)      |
-| `USER_AGENT`                  | Browser user agent                             | Chrome user agent string               |
-| `EXPAND_SELECTOR`             | CSS selector for expand button                 | `tp-yt-paper-button#expand`            |
-| `NOT_FOUND_SELECTOR`          | CSS selector for video not found errors        | `yt-player-error-message-renderer`     |
-| `SHOW_TRANSCRIPT_SELECTOR`    | CSS selector for transcript button             | `button[aria-label="Show transcript"]` |
-| `VIEW_COUNT_SELECTOR`         | CSS selector for view count                    | `yt-formatted-string#info span`        |
-| `TRANSCRIPT_SEGMENT_SELECTOR` | CSS selector for transcript segments           | `ytd-transcript-segment-renderer`      |
-| `TRANSCRIPT_SELECTOR`         | CSS selector for transcript container          | `ytd-transcript-renderer`              |
-| `TRANSCRIPT_TEXT_SELECTOR`    | CSS selector for transcript text               | `.segment-text`                        |
+| Variable                      | Description                                    | Default                                                           |
+| ----------------------------- | ---------------------------------------------- | ----------------------------------------------------------------- |
+| `PORT`                        | Server port                                    | `5000`                                                            |
+| `API_KEY`                     | Required API key for authentication (optional) | Not set (authentication disabled)                                 |
+| `USER_AGENT`                  | Browser user agent                             | Chrome user agent string                                          |
+| `EXPAND_SELECTOR`             | CSS selector for expand button                 | `tp-yt-paper-button#expand`                                       |
+| `NOT_FOUND_SELECTOR`          | CSS selector for video not found errors        | `div.promo-title:has-text("This video isn\'t available anymore")` |
+| `SHOW_TRANSCRIPT_SELECTOR`    | CSS selector for transcript button             | `button[aria-label="Show transcript"]`                            |
+| `VIEW_COUNT_SELECTOR`         | CSS selector for view count                    | `yt-formatted-string#info span`                                   |
+| `TRANSCRIPT_SEGMENT_SELECTOR` | CSS selector for transcript segments           | `ytd-transcript-segment-renderer`                                 |
+| `TRANSCRIPT_SELECTOR`         | CSS selector for transcript container          | `ytd-transcript-renderer`                                         |
+| `TRANSCRIPT_TEXT_SELECTOR`    | CSS selector for transcript text               | `.segment-text`                                                   |
 
 ### Setting up API Key Authentication
 

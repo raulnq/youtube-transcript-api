@@ -14,7 +14,7 @@ services:
       # Optional: Customize selectors if YouTube changes their interface
       # - USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
       # - EXPAND_SELECTOR=tp-yt-paper-button#expand
-      # - NOT_FOUND_SELECTOR=yt-player-error-message-renderer
+      # - NOT_FOUND_SELECTOR=div.promo-title:has-text("This video isn't available anymore")
       # - SHOW_TRANSCRIPT_SELECTOR=button[aria-label="Show transcript"]
       # - VIEW_COUNT_SELECTOR=yt-formatted-string#info span
       # - TRANSCRIPT_SEGMENT_SELECTOR=ytd-transcript-segment-renderer

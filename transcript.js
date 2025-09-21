@@ -8,7 +8,8 @@ const USER_AGENT =
 const selectors = {
   expand: process.env.EXPAND_SELECTOR || 'tp-yt-paper-button#expand',
   notFound:
-    process.env.NOT_FOUND_SELECTOR || 'yt-player-error-message-renderer',
+    process.env.NOT_FOUND_SELECTOR ||
+    'div.promo-title:has-text("This video isn\'t available anymore"), div.promo-title:has-text("Este video ya no está disponible")',
   showTranscript:
     process.env.SHOW_TRANSCRIPT_SELECTOR ||
     'button[aria-label="Show transcript"], button[aria-label="Mostrar transcripción"]',
@@ -46,20 +47,39 @@ export default async function getTranscript(videoId) {
       });
       const base64Screenshot = screenshot.toString('base64');
       throw new AppError('Video not found or unavailable', 'not_found', 404, {
-        screenshot: base64Screenshot,
+        screenshot: `data:image/png;base64,${base64Screenshot}`,
       });
     }
 
     const expandButton = await page.$(selectors.expand);
     if (!expandButton) {
-      throw new AppError('Expand button not found', 'validation', 400);
+      const screenshot = await page.screenshot({
+        fullPage: true,
+        type: 'png',
+      });
+      const base64Screenshot = screenshot.toString('base64');
+      throw new AppError('Expand button not found', 'validation', 400, {
+        screenshot: `data:image/png;base64,${base64Screenshot}`,
+      });
     }
 
     await expandButton.click({ timeout: 5000 });
 
     const showTranscriptButton = await page.$(selectors.showTranscript);
     if (!showTranscriptButton) {
-      throw new AppError('Show transcript button not found', 'validation', 400);
+      const screenshot = await page.screenshot({
+        fullPage: true,
+        type: 'png',
+      });
+      const base64Screenshot = screenshot.toString('base64');
+      throw new AppError(
+        'Show transcript button not found',
+        'validation',
+        400,
+        {
+          screenshot: `data:image/png;base64,${base64Screenshot}`,
+        }
+      );
     }
 
     await showTranscriptButton.click({ timeout: 5000 });
