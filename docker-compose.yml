@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  youtube-transcript-api:
+    build: .
+    ports:
+      - '5000:5000'
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      # Uncomment and set if you want API key authentication
+      # - API_KEY=your-secret-api-key-here
+
+      # Optional: Customize selectors if YouTube changes their interface
+      # - USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+      # - EXPAND_SELECTOR=tp-yt-paper-button#expand
+      # - NOT_FOUND_SELECTOR=yt-player-error-message-renderer
+      # - SHOW_TRANSCRIPT_SELECTOR=button[aria-label="Show transcript"]
+      # - VIEW_COUNT_SELECTOR=yt-formatted-string#info span
+      # - TRANSCRIPT_SEGMENT_SELECTOR=ytd-transcript-segment-renderer
+      # - TRANSCRIPT_SELECTOR=ytd-transcript-renderer
+      # - TRANSCRIPT_TEXT_SELECTOR=.segment-text
+    restart: unless-stopped
