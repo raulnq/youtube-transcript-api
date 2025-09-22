@@ -70,7 +70,7 @@ COPY --from=dependencies --chown=nodejs:nodejs /root/.cache/ms-playwright /home/
 COPY --chown=nodejs:nodejs . .
 
 # Remove development files if they exist
-RUN rm -f .env .gitignore README.md
+RUN rm -f .env.example .gitignore README.md
 
 # Switch to non-root user
 USER nodejs
