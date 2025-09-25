@@ -6,14 +6,34 @@ A REST API for fetching YouTube video transcripts using Playwright and Express.j
 
 - 🎥 Extract transcripts from YouTube videos
 - 📊 Retrieve video view counts
-- � Optional API key authentication
-- �🛡️ Robust error handling with RFC 7807 Problem Details
+- 🔑 Optional API key authentication
+- 🛡️ Robust error handling with RFC 7807 Problem Details
 - 🎭 Uses Playwright for reliable web scraping
 - 🚀 Express.js REST API
 - 📝 Comprehensive logging with Morgan
-- 🔧 Configurable selectors via environment variables
+- ❤️ Health check endpoint for monitoring
+- 🔧 Configurable selectors via environment variablesscript API
 
 ## API Endpoints
+
+### Health Check
+
+```http
+GET /live
+```
+
+**Description:**
+Health check endpoint that returns the current status of the service.
+
+**Response:**
+
+```json
+{
+  "status": "healthy",
+  "uptime": 123.456,
+  "timestamp": 1695123456789
+}
+```
 
 ### Get Transcript
 
@@ -134,6 +154,9 @@ The server will start on `http://localhost:5000` by default.
 ### Using curl
 
 ```bash
+# Health check
+curl http://localhost:5000/live
+
 # Get transcript for a YouTube video (no API key required if not set)
 curl http://localhost:5000/transcript/dQw4w9WgXcQ
 
@@ -252,6 +275,31 @@ $env:API_KEY="your-secret-api-key-here"
 ```
 
 **Note:** If `API_KEY` is not set, the API will work without authentication. Set it only when you want to protect your API.
+
+## Monitoring and Health Checks
+
+The API includes a built-in health check endpoint at `/live` that provides:
+
+- **Service Status**: Confirms the service is responding
+- **Uptime**: Shows how long the server has been running (in seconds)
+- **Timestamp**: Current server timestamp
+
+This endpoint is useful for:
+
+- **Container Orchestration**: Docker Swarm, Kubernetes health checks
+- **Load Balancers**: Health-based traffic routing
+- **Monitoring Systems**: Service availability alerts
+- **DevOps Pipelines**: Deployment verification
+
+**Example Health Check Response:**
+
+```json
+{
+  "status": "healthy",
+  "uptime": 3600.45,
+  "timestamp": 1695123456789
+}
+```
 
 ## Development
 

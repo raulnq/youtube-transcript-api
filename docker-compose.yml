@@ -20,4 +20,18 @@ services:
       # - TRANSCRIPT_SEGMENT_SELECTOR=ytd-transcript-segment-renderer
       # - TRANSCRIPT_SELECTOR=ytd-transcript-renderer
       # - TRANSCRIPT_TEXT_SELECTOR=.segment-text
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:5000/live',
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped

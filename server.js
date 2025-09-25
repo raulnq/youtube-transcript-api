@@ -3,6 +3,7 @@ import getTranscript from './transcript.js';
 import morgan from 'morgan';
 import { errorHandler, AppError } from './errorHandler.js';
 import { validateApiKey } from './securityHandler.js';
+import healthcheck from 'express-healthcheck';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,6 +11,16 @@ const PORT = process.env.PORT || 5000;
 const videoIdRegex = /^[a-zA-Z0-9_-]{11}$/;
 
 app.use(morgan('dev'));
+app.use(
+  '/live',
+  healthcheck({
+    healthy: () => ({
+      status: 'healthy',
+      uptime: process.uptime(),
+      timestamp: Date.now(),
+    }),
+  })
+);
 app.get('/transcript/:videoId', validateApiKey, async (req, res) => {
   const { videoId } = req.params;
 
