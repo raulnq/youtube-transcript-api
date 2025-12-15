@@ -84,7 +84,7 @@ export default async function getTranscript(videoId) {
 
     await showTranscriptButton.click({ timeout: 5000 });
 
-    await page.waitForSelector(selectors.transcript, { timeout: 30000 });
+    await page.waitForSelector(selectors.transcript, { timeout: 60000 });
 
     const transcript = await page.$$eval(
       selectors.transcriptSegment,
