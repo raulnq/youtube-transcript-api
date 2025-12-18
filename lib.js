@@ -115,9 +115,15 @@ class YoutubeTranscript {
       options
     );
 
+    console.log('InnerTube API Response:', InnerTubeApiResponse);
+
+    const body = await InnerTubeApiResponse.json();
+
+    console.log('InnerTube API Response Body:', body);
+
     const {
       captions: { playerCaptionsTracklistRenderer: captions },
-    } = await InnerTubeApiResponse.json();
+    } = body;
 
     if (!captions) {
       throw new YoutubeTranscriptDisabledError(videoId);
