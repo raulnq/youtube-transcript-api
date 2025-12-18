@@ -24,11 +24,20 @@ const selectors = {
 export default async function getTranscript(videoId) {
   const browser = await chromium.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: [
+      '--disable-blink-features=AutomationControlled', // Main stealth flag
+      '--disable-dev-shm-usage',
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-web-security',
+      '--disable-features=IsolateOrigins,site-per-process',
+    ],
   });
 
   const context = await browser.newContext({
+    viewport: { width: 1920, height: 1080 },
     userAgent: USER_AGENT,
+    locale: 'en-US',
   });
 
   const page = await context.newPage();
