@@ -27,13 +27,12 @@ export default async function getTranscript(videoId) {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
 
+  const context = await browser.newContext({
+    userAgent: USER_AGENT,
+  });
+
+  const page = await context.newPage();
   try {
-    const context = await browser.newContext({
-      userAgent: USER_AGENT,
-    });
-
-    const page = await context.newPage();
-
     await page.goto(`https://www.youtube.com/watch?v=${videoId}`, {
       waitUntil: 'networkidle',
       timeout: 30000,
@@ -84,7 +83,7 @@ export default async function getTranscript(videoId) {
 
     await showTranscriptButton.click({ timeout: 5000 });
 
-    await page.waitForSelector(selectors.transcript, { timeout: 60000 });
+    await page.waitForSelector(selectors.transcript, { timeout: 30000 });
 
     const transcript = await page.$$eval(
       selectors.transcriptSegment,
@@ -105,10 +104,18 @@ export default async function getTranscript(videoId) {
     if (error instanceof AppError) {
       throw error;
     }
+    const screenshot = await page.screenshot({
+      fullPage: true,
+      type: 'png',
+    });
+    const base64Screenshot = screenshot.toString('base64');
     throw new AppError(
       `Failed to fetch transcript: ${error.message}`,
       'error',
-      500
+      500,
+      {
+        screenshot: `data:image/png;base64,${base64Screenshot}`,
+      }
     );
   } finally {
     await browser.close();
