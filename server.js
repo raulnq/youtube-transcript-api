@@ -1,5 +1,5 @@
 import express from 'express';
-import getTranscript from './transcriptLib.js';
+import getTranscript from './transcript.js';
 import morgan from 'morgan';
 import { errorHandler, AppError } from './errorHandler.js';
 import { validateApiKey } from './securityHandler.js';
