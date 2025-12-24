@@ -5,6 +5,98 @@ const USER_AGENT =
   process.env.USER_AGENT ||
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
 
+/**
+ * Parse cookies from YOUTUBE_COOKIES environment variable.
+ * Supports JSON array format: [{"name": "...", "value": "...", "domain": ".youtube.com", ...}]
+ * @returns {Array} Array of cookie objects for Playwright, or empty array if not set/invalid
+ */
+function parseCookies() {
+  const cookiesEnv = process.env.YOUTUBE_COOKIES;
+  if (!cookiesEnv) return [];
+
+  try {
+    const cookies = JSON.parse(cookiesEnv);
+    if (!Array.isArray(cookies)) {
+      console.warn('YOUTUBE_COOKIES must be a JSON array');
+      return [];
+    }
+
+    // Map browser extension sameSite values to Playwright values
+    const mapSameSite = sameSite => {
+      const mapping = {
+        no_restriction: 'None',
+        lax: 'Lax',
+        strict: 'Strict',
+        unspecified: 'Lax',
+      };
+      return mapping[sameSite?.toLowerCase()] || 'Lax';
+    };
+
+    // Ensure each cookie has required fields and defaults
+    return cookies.map(cookie => ({
+      name: cookie.name,
+      value: cookie.value,
+      domain: cookie.domain || '.youtube.com',
+      path: cookie.path || '/',
+      secure: cookie.secure ?? true,
+      httpOnly: cookie.httpOnly ?? false,
+      sameSite: mapSameSite(cookie.sameSite),
+    }));
+  } catch (error) {
+    console.warn('Failed to parse YOUTUBE_COOKIES:', error.message);
+    return [];
+  }
+}
+
+// Human simulation utilities
+const randomDelay = (min = 100, max = 500) =>
+  new Promise(resolve =>
+    setTimeout(resolve, Math.random() * (max - min) + min)
+  );
+
+async function humanScroll(page) {
+  const scrolls = Math.floor(Math.random() * 3) + 1;
+  for (let i = 0; i < scrolls; i++) {
+    const scrollAmount = Math.floor(Math.random() * 300) + 100;
+    await page.mouse.wheel(0, scrollAmount);
+    await randomDelay(200, 600);
+  }
+}
+
+async function humanMouseMove(page, element) {
+  const box = await element.boundingBox();
+  if (!box) return;
+
+  // Get current viewport size
+  const viewport = page.viewportSize();
+
+  // Start from a random position
+  const startX = Math.floor(Math.random() * viewport.width);
+  const startY = Math.floor(Math.random() * viewport.height);
+
+  // Target center of element with slight randomness
+  const targetX = box.x + box.width / 2 + (Math.random() - 0.5) * 10;
+  const targetY = box.y + box.height / 2 + (Math.random() - 0.5) * 10;
+
+  // Move in steps to simulate human movement
+  const steps = Math.floor(Math.random() * 10) + 5;
+  for (let i = 0; i <= steps; i++) {
+    const progress = i / steps;
+    // Ease-out curve for more natural movement
+    const eased = 1 - Math.pow(1 - progress, 2);
+    const x = startX + (targetX - startX) * eased;
+    const y = startY + (targetY - startY) * eased;
+    await page.mouse.move(x, y);
+    await randomDelay(10, 30);
+  }
+}
+
+async function humanClick(page, element) {
+  await humanMouseMove(page, element);
+  await randomDelay(50, 150);
+  await element.click();
+}
+
 const selectors = {
   expand: process.env.EXPAND_SELECTOR || 'tp-yt-paper-button#expand',
   notFound:
@@ -37,8 +129,14 @@ export default async function getTranscript(videoId) {
   const context = await browser.newContext({
     viewport: { width: 1920, height: 1080 },
     userAgent: USER_AGENT,
-    locale: 'en-US',
+    //locale: 'en-US',
   });
+
+  // Add cookies if provided via environment variable
+  const cookies = parseCookies();
+  if (cookies.length > 0) {
+    await context.addCookies(cookies);
+  }
 
   const page = await context.newPage();
   try {
@@ -46,6 +144,9 @@ export default async function getTranscript(videoId) {
       waitUntil: 'networkidle',
       timeout: 30000,
     });
+
+    // Initial random delay to simulate page reading
+    await randomDelay(500, 1500);
 
     const errorElement = await page.$(selectors.notFound);
     if (errorElement) {
@@ -59,6 +160,10 @@ export default async function getTranscript(videoId) {
       });
     }
 
+    // Simulate human scrolling behavior
+    await humanScroll(page);
+    await randomDelay(300, 800);
+
     const expandButton = await page.$(selectors.expand);
     if (!expandButton) {
       const screenshot = await page.screenshot({
@@ -71,7 +176,8 @@ export default async function getTranscript(videoId) {
       });
     }
 
-    await expandButton.click({ timeout: 5000 });
+    await humanClick(page, expandButton);
+    await randomDelay(200, 500);
 
     const showTranscriptButton = await page.$(selectors.showTranscript);
     if (!showTranscriptButton) {
@@ -90,7 +196,7 @@ export default async function getTranscript(videoId) {
       );
     }
 
-    await showTranscriptButton.click({ timeout: 5000 });
+    await humanClick(page, showTranscriptButton);
 
     await page.waitForSelector(selectors.transcript, { timeout: 30000 });
 
