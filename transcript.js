@@ -7,30 +7,43 @@ const USER_AGENT =
 
 /**
  * Parse cookies from YOUTUBE_COOKIES environment variable.
- * Supports JSON array format: [{"name": "...", "value": "...", "domain": ".youtube.com", ...}]
+ * Supports both base64-encoded and raw JSON array formats.
  * @returns {Array} Array of cookie objects for Playwright, or empty array if not set/invalid
  */
 function parseCookies() {
   const cookiesEnv = process.env.YOUTUBE_COOKIES;
   if (!cookiesEnv) return [];
 
+  // Map browser extension sameSite values to Playwright values
+  const mapSameSite = sameSite => {
+    const mapping = {
+      no_restriction: 'None',
+      lax: 'Lax',
+      strict: 'Strict',
+      unspecified: 'Lax',
+    };
+    return mapping[sameSite?.toLowerCase()] || 'Lax';
+  };
+
+  let jsonString = cookiesEnv;
+
+  // Try to decode as base64 first (recommended for Docker/Coolify deployments)
   try {
-    const cookies = JSON.parse(cookiesEnv);
+    const decoded = Buffer.from(cookiesEnv, 'base64').toString('utf-8');
+    // Check if decoded string looks like JSON array
+    if (decoded.trim().startsWith('[')) {
+      jsonString = decoded;
+    }
+  } catch {
+    // Not base64, use as-is
+  }
+
+  try {
+    const cookies = JSON.parse(jsonString);
     if (!Array.isArray(cookies)) {
       console.warn('YOUTUBE_COOKIES must be a JSON array');
       return [];
     }
-
-    // Map browser extension sameSite values to Playwright values
-    const mapSameSite = sameSite => {
-      const mapping = {
-        no_restriction: 'None',
-        lax: 'Lax',
-        strict: 'Strict',
-        unspecified: 'Lax',
-      };
-      return mapping[sameSite?.toLowerCase()] || 'Lax';
-    };
 
     // Ensure each cookie has required fields and defaults
     return cookies.map(cookie => ({
